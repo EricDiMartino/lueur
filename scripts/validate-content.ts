@@ -6,6 +6,9 @@ import {
   CatalogueDecorsSchema,
   CatalogueObjetsSchema,
   CatalogueTerrainsSchema,
+  CatalogueRecettesSchema,
+  CatalogueEnnemisSchema,
+  CatalogueMissionsSchema,
 } from '../src/content/schemas';
 
 /**
@@ -18,6 +21,9 @@ const fichiers = [
   { chemin: 'src/content/terrains.json', schema: CatalogueTerrainsSchema },
   { chemin: 'src/content/decors.json', schema: CatalogueDecorsSchema },
   { chemin: 'src/content/cartes/foret.json', schema: CarteSchema },
+  { chemin: 'src/content/recettes.json', schema: CatalogueRecettesSchema },
+  { chemin: 'src/content/ennemis.json', schema: CatalogueEnnemisSchema },
+  { chemin: 'src/content/missions.json', schema: CatalogueMissionsSchema },
 ];
 
 let echecs = 0;
@@ -104,6 +110,48 @@ if (terrains && decors && foret) {
     if (inconnus.length > 10) console.error(`   … et ${inconnus.length - 10} autres`);
   } else {
     console.log(`✅ Carte « ${foret.nom} » — tous les symboles sont connus`);
+  }
+}
+
+/**
+ * Contrôle croisé : toute recette ou mission qui parle d'un objet doit parler
+ * d'un objet qui existe. C'est l'erreur type d'une faute de frappe dans un id.
+ */
+const objets = valides.get('src/content/objets.json') as { id: string }[] | undefined;
+const recettes = valides.get('src/content/recettes.json') as
+  | { id: string; resultat: string; ingredients: { objet: string }[] }[]
+  | undefined;
+const missionsContenu = valides.get('src/content/missions.json') as
+  | { id: string; condition: { type: string; objet?: string } }[]
+  | undefined;
+
+if (objets) {
+  const connus = new Set(objets.map((o) => o.id));
+  const inconnus: string[] = [];
+
+  for (const r of recettes ?? []) {
+    if (!connus.has(r.resultat)) {
+      inconnus.push(`recette « ${r.id} » : le résultat « ${r.resultat} » n'existe pas dans objets.json`);
+    }
+    for (const i of r.ingredients) {
+      if (!connus.has(i.objet)) {
+        inconnus.push(`recette « ${r.id} » : l'ingrédient « ${i.objet} » n'existe pas dans objets.json`);
+      }
+    }
+  }
+
+  for (const m of missionsContenu ?? []) {
+    if (m.condition.objet && !connus.has(m.condition.objet)) {
+      inconnus.push(`mission « ${m.id} » : l'objet « ${m.condition.objet} » n'existe pas dans objets.json`);
+    }
+  }
+
+  if (inconnus.length > 0) {
+    echecs++;
+    console.error(`\n❌ Références croisées`);
+    for (const message of inconnus) console.error(`   • ${message}`);
+  } else if (recettes && missionsContenu) {
+    console.log(`✅ Recettes et missions — tous les objets référencés existent`);
   }
 }
 

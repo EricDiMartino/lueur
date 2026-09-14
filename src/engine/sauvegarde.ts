@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import type { Inventaire } from './inventaire';
+import { COEURS_MAX, FAIM_MAX, type Survie } from './survie';
+import { MISSIONS_NEUVES, type EtatMissions } from './missions';
 
 /**
  * Sauvegarde locale.
@@ -16,7 +18,21 @@ import type { Inventaire } from './inventaire';
 
 export const CLE_SAUVEGARDE = 'lueur.partie';
 /** À incrémenter quand la forme des données change de façon incompatible. */
-export const VERSION_SAUVEGARDE = 1;
+export const VERSION_SAUVEGARDE = 2;
+
+const SurvieSchema = z.object({
+  coeurs: z.number().int().min(0).max(COEURS_MAX),
+  faim: z.number().min(0).max(FAIM_MAX),
+  secondesVentreVide: z.number().min(0),
+});
+
+const CompteursSchema = z.object({
+  ramasses: z.record(z.string(), z.number().int().nonnegative()),
+  fabriques: z.record(z.string(), z.number().int().nonnegative()),
+  vaincus: z.number().int().nonnegative(),
+  manges: z.number().int().nonnegative(),
+  jour: z.number().int().positive(),
+});
 
 const PartieSchema = z.object({
   version: z.literal(VERSION_SAUVEGARDE),
@@ -24,6 +40,10 @@ const PartieSchema = z.object({
   inventaire: z.record(z.string(), z.number().int().nonnegative()),
   /** Identifiants des décors récoltés, pour ne pas les faire réapparaître pleins. */
   decorsEpuises: z.array(z.number().int().nonnegative()),
+  survie: SurvieSchema,
+  secondesEcoulees: z.number().nonnegative(),
+  missions: z.object({ index: z.number().int().nonnegative(), compteurs: CompteursSchema }),
+  modeBalade: z.boolean(),
 });
 
 export type Partie = z.infer<typeof PartieSchema>;
@@ -60,16 +80,34 @@ export function stockageDuNavigateur(): Stockage {
   }
 }
 
+export interface EtatDeJeu {
+  survie: Survie;
+  secondesEcoulees: number;
+  missions: EtatMissions;
+  modeBalade: boolean;
+}
+
 export function serialiser(
   position: { x: number; y: number },
   inventaire: Inventaire,
   decorsEpuises: readonly number[],
+  etat: EtatDeJeu = {
+    survie: { coeurs: COEURS_MAX, faim: FAIM_MAX, secondesVentreVide: 0 },
+    secondesEcoulees: 0,
+    missions: MISSIONS_NEUVES,
+    modeBalade: false,
+  },
 ): Partie {
   return {
     version: VERSION_SAUVEGARDE,
     position: { x: Math.round(position.x), y: Math.round(position.y) },
     inventaire: { ...inventaire },
     decorsEpuises: [...decorsEpuises],
+    survie: etat.survie,
+    // Arrondi à la seconde : la précision au centième n'apporte rien.
+    secondesEcoulees: Math.round(etat.secondesEcoulees),
+    missions: { index: etat.missions.index, compteurs: etat.missions.compteurs },
+    modeBalade: etat.modeBalade,
   };
 }
 

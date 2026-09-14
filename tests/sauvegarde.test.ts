@@ -25,7 +25,39 @@ const stockageEnPanne: Stockage = {
   removeItem: () => { throw new Error('stockage indisponible'); },
 };
 
+const etatComplet = {
+  survie: { coeurs: 2, faim: 41, secondesVentreVide: 3 },
+  secondesEcoulees: 512.7,
+  missions: {
+    index: 4,
+    compteurs: { ramasses: { bois: 12 }, fabriques: { hache_bois: 1 }, vaincus: 3, manges: 2, jour: 2 },
+  },
+  modeBalade: true,
+};
+
 describe('sauvegarde', () => {
+  it('conserve survie, temps, missions et mode balade', () => {
+    const s = stockageFactice();
+    const partie = serialiser({ x: 10, y: 20 }, { bois: 4 }, [1], etatComplet);
+    ecrire(s, partie);
+    const relue = lire(s);
+    expect(relue?.survie).toEqual(etatComplet.survie);
+    expect(relue?.missions).toEqual(etatComplet.missions);
+    expect(relue?.modeBalade).toBe(true);
+  });
+
+  it('arrondit le temps écoulé : le centième de seconde n’apporte rien', () => {
+    expect(serialiser({ x: 0, y: 0 }, {}, [], etatComplet).secondesEcoulees).toBe(513);
+  });
+
+  it('refuse un nombre de cœurs impossible', () => {
+    const triche = JSON.stringify({
+      ...serialiser({ x: 0, y: 0 }, {}, [], etatComplet),
+      survie: { coeurs: 99, faim: 50, secondesVentreVide: 0 },
+    });
+    expect(lire(stockageFactice({ [CLE_SAUVEGARDE]: triche }))).toBeNull();
+  });
+
   it('fait un aller-retour fidèle', () => {
     const s = stockageFactice();
     const partie = serialiser({ x: 624, y: 464 }, { bois: 12, baie: 3 }, [4, 17]);

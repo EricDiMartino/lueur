@@ -1,0 +1,26 @@
+[
+  {
+    "id": "hache_bois",
+    "resultat": "hache_bois",
+    "quantite": 1,
+    "ingredients": [{ "objet": "bois", "quantite": 3 }],
+    "auFeuDeCamp": true
+  },
+  {
+    "id": "epee_bois",
+    "resultat": "epee_bois",
+    "quantite": 1,
+    "ingredients": [
+      { "objet": "bois", "quantite": 4 },
+      { "objet": "pierre", "quantite": 2 }
+    ],
+    "auFeuDeCamp": true
+  },
+  {
+    "id": "compote",
+    "resultat": "compote",
+    "quantite": 1,
+    "ingredients": [{ "objet": "baie", "quantite": 5 }],
+    "auFeuDeCamp": true
+  }
+]

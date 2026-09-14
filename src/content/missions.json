@@ -1,0 +1,52 @@
+[
+  {
+    "id": "premier_bois",
+    "texte": "Ramasse 3 bûches",
+    "condition": { "type": "ramasser", "objet": "bois", "quantite": 3 }
+  },
+  {
+    "id": "premieres_baies",
+    "texte": "Cueille 5 baies",
+    "condition": { "type": "ramasser", "objet": "baie", "quantite": 5 }
+  },
+  {
+    "id": "gouter",
+    "texte": "Mange une baie",
+    "condition": { "type": "manger", "quantite": 1 }
+  },
+  {
+    "id": "des_pierres",
+    "texte": "Casse 2 rochers",
+    "condition": { "type": "ramasser", "objet": "pierre", "quantite": 4 }
+  },
+  {
+    "id": "une_hache",
+    "texte": "Fabrique une hache au feu de camp",
+    "condition": { "type": "fabriquer", "objet": "hache_bois", "quantite": 1 }
+  },
+  {
+    "id": "une_epee",
+    "texte": "Fabrique une épée",
+    "condition": { "type": "fabriquer", "objet": "epee_bois", "quantite": 1 }
+  },
+  {
+    "id": "premiere_creature",
+    "texte": "Écarte une créature",
+    "condition": { "type": "vaincre", "quantite": 1 }
+  },
+  {
+    "id": "trois_creatures",
+    "texte": "Écarte 3 créatures",
+    "condition": { "type": "vaincre", "quantite": 3 }
+  },
+  {
+    "id": "une_compote",
+    "texte": "Prépare une compote",
+    "condition": { "type": "fabriquer", "objet": "compote", "quantite": 1 }
+  },
+  {
+    "id": "deux_jours",
+    "texte": "Passe une nuit dehors",
+    "condition": { "type": "survivre", "jours": 2 }
+  }
+]

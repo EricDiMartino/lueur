@@ -146,6 +146,42 @@ ecrire('rocher-casse', decouper(rochers, 32, 0, 32, 32));
  */
 ecrire('icone-bois', decouper(troncs, 34, 8, 32, 32));
 
+// ─── Feu de camp ─────────────────────────────────────────────────────────────
+
+/**
+ * LPC ne fournit pas de feu de camp. On en compose un : la flamme vient de la
+ * torche murale de castle_lightsources.png, et les pierres du foyer sont les
+ * petits cailloux de rock.png, découpés un par un et disposés en cercle.
+ * Posés tels quels, ils donnaient une flamme sortant d'un rocher.
+ * Le scintillement est animé en jeu, pas ici.
+ */
+{
+  const sources = lire('castle_lightsources.png');
+  const FLAMME = { x: 72, y: 4, largeur: 16, hauteur: 19 };
+  const LARGEUR = 44, HAUTEUR = 34;
+  const BASE_FOYER = HAUTEUR - 4;
+
+  const feu = new PNG({ width: LARGEUR, height: HAUTEUR });
+  feu.data.fill(0);
+
+  // Flamme d'abord : les pierres de devant passeront par-dessus.
+  composer(sources, FLAMME.x, FLAMME.y, FLAMME.largeur, FLAMME.hauteur, feu,
+    (LARGEUR - FLAMME.largeur) / 2, BASE_FOYER - FLAMME.hauteur - 2);
+
+  // Cailloux du foyer : { découpe dans rock.png }, { position dans le sprite }
+  const pierres = [
+    [{ x: 43, y: 11, l: 18, h: 15 }, { x: 1, y: BASE_FOYER - 13 }],
+    [{ x: 35, y: 0, l: 16, h: 9 }, { x: LARGEUR - 18, y: BASE_FOYER - 11 }],
+    [{ x: 34, y: 13, l: 10, h: 6 }, { x: 14, y: BASE_FOYER - 6 }],
+    [{ x: 53, y: 28, l: 7, h: 4 }, { x: 26, y: BASE_FOYER - 5 }],
+  ];
+  for (const [decoupe, position] of pierres) {
+    composer(rochers, decoupe.x, decoupe.y, decoupe.l, decoupe.h, feu, position.x, position.y);
+  }
+
+  ecrire('feu-de-camp', feu);
+}
+
 // ─── Végétation de l'atlas ───────────────────────────────────────────────────
 
 const BUISSON_BAIES = 941;
