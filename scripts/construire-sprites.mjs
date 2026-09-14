@@ -23,9 +23,37 @@ const atlas = PNG.sync.read(readFileSync('public/assets/tiles/terrain_atlas.png'
 const colonnesAtlas = atlas.width / TUILE;
 
 const lire = (nom) => PNG.sync.read(readFileSync(`${source}/tiles/${nom}`));
-const ecrire = (nom, png) => {
+
+/**
+ * Retire les lignes entièrement transparentes sous le sprite.
+ *
+ * Les décors sont posés sur la carte avec l'origine au pied — leur bord
+ * inférieur doit donc coïncider avec leur base visible. Les fichiers LPC
+ * laissent jusqu'à 23 px de vide sous un arbre : sans ce rognage, l'arbre
+ * flotte au-dessus de sa zone de blocage et du halo de récolte, et le décalage
+ * se voit immédiatement en jeu.
+ */
+function rognerLeBas(png) {
+  let derniereLigneVisible = -1;
+  for (let y = png.height - 1; y >= 0; y--) {
+    for (let x = 0; x < png.width; x++) {
+      if (png.data[((y * png.width + x) << 2) + 3] > 0) { derniereLigneVisible = y; break; }
+    }
+    if (derniereLigneVisible >= 0) break;
+  }
+  if (derniereLigneVisible < 0 || derniereLigneVisible === png.height - 1) return { png, rogne: 0 };
+
+  const hauteur = derniereLigneVisible + 1;
+  const rogne = png.height - hauteur;
+  const sortie = new PNG({ width: png.width, height: hauteur });
+  png.data.copy(sortie.data, 0, 0, hauteur * png.width * 4);
+  return { png: sortie, rogne };
+}
+
+const ecrire = (nom, pngBrut) => {
+  const { png, rogne } = rognerLeBas(pngBrut);
   writeFileSync(`public/assets/sprites/${nom}.png`, PNG.sync.write(png));
-  console.log(`${nom}.png — ${png.width}×${png.height}`);
+  console.log(`${nom}.png — ${png.width}×${png.height}${rogne ? ` (${rogne} px de vide rognés sous le pied)` : ''}`);
 };
 
 function composer(src, sx, sy, largeur, hauteur, dest, dx, dy) {
