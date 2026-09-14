@@ -51,8 +51,8 @@ refusée par défaut ; il faut une décision explicite de l'arbitre pour la leve
 5. **Icônes plutôt que texte.** Aucune progression ne dépend de la lecture d'un
    texte long. Police large et lisible partout.
 6. **Aucun timer stressant**, aucun son agressif, aucune pression temporelle.
-7. **Mode balade** activable dans les options : désactive la faim et les ennemis.
-   Pour explorer tranquillement.
+7. **Mode balade**, touche **B** : gèle la faim, efface les créatures et rend le
+   plein jour. Pour explorer tranquillement, sans rien à gérer.
 
 ---
 
@@ -90,9 +90,20 @@ silence : une récolte qui disparaît sans explication est incompréhensible.
 
 ### Combat
 
-Un bouton d'attaque, une épée, court délai de récupération. Trois cœurs au départ.
-Chaque ennemi a un mouvement d'attaque **télégraphié** (il se fige et clignote une
-demi-seconde avant de frapper) : c'est ce qui rend le combat lisible à 9 ans.
+Un bouton d'attaque, une épée à fabriquer d'abord, court délai de récupération.
+Trois cœurs au départ. Chaque créature **annonce son coup** : elle s'immobilise
+et clignote une demi-seconde avant de frapper. S'éloigner pendant l'annonce
+suffit à l'éviter — sans ce signal, se faire toucher paraît arbitraire.
+
+Tomber à zéro cœur réveille au campement. Ni écran, ni compte à rebours : on
+perd la moitié de ses ressources brutes, jamais les outils, l'équipement ni la
+nourriture.
+
+### Le campement
+
+Un feu de camp au centre de la clairière. Il sert de trois choses : point de
+réveil, seule station de fabrication, et refuge — les créatures n'y frappent
+pas, et sa lueur perce la nuit.
 
 ### Donjon
 
@@ -132,10 +143,15 @@ ramifiés, sons et musique (palier 3), manette (palier 3), tactile (palier 3).
 | Action | Touche |
 |---|---|
 | Déplacement | Flèches **et** ZQSD **et** WASD (les trois actifs) |
+| Récolter | E |
+| Manger | A |
+| Fabriquer | C |
 | Attaquer | Espace |
-| Interagir / récolter | E |
-| Inventaire | I |
-| Pause | Échap |
+| Mode balade | B |
+
+Une touche, une action, sans menu à parcourir. Fabriquer produit la première
+recette réalisable et dit ce qui manque sinon ; manger consomme l'aliment le
+plus nourrissant. À 9 ans, une liste à naviguer coûte plus qu'elle n'apporte.
 
 Manette au palier 3, tactile au palier 3.
 

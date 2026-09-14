@@ -127,3 +127,61 @@ export const CarteSchema = z
 export type Terrain = z.infer<typeof TerrainSchema>;
 export type Decor = z.infer<typeof DecorSchema>;
 export type Carte = z.infer<typeof CarteSchema>;
+
+export const RecetteSchema = z.object({
+  id: Identifiant,
+  /** Identifiant d'un objet de objets.json. */
+  resultat: Identifiant,
+  quantite: z.number().int().positive(),
+  ingredients: z
+    .array(z.object({ objet: Identifiant, quantite: z.number().int().positive() }))
+    .min(1, 'une recette sans ingrédient n’a pas de sens'),
+  /** Les recettes au feu de camp donnent une raison de rentrer au campement. */
+  auFeuDeCamp: z.boolean(),
+});
+
+export const EnnemiSchema = z.object({
+  id: Identifiant,
+  nom: z.string().min(1),
+  /** Nom du fichier dans public/assets/sprites/monstres/, sans l'extension. */
+  sprite: z.string().min(1),
+  pointsDeVie: z.number().int().positive(),
+  degats: z.number().int().positive(),
+  vitesse: z.number().int().positive(),
+  /** Distance à laquelle la créature frappe. */
+  porteeAttaque: z.number().int().positive(),
+  /** Distance à laquelle elle remarque la joueuse et se met à la suivre. */
+  distanceDeReveil: z.number().int().positive(),
+});
+
+const ConditionSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('ramasser'), objet: Identifiant, quantite: z.number().int().positive() }),
+  z.object({ type: z.literal('fabriquer'), objet: Identifiant, quantite: z.number().int().positive() }),
+  z.object({ type: z.literal('vaincre'), quantite: z.number().int().positive() }),
+  z.object({ type: z.literal('manger'), quantite: z.number().int().positive() }),
+  z.object({ type: z.literal('survivre'), jours: z.number().int().positive() }),
+]);
+
+export const MissionSchema = z.object({
+  id: Identifiant,
+  /** Phrase courte, à la deuxième personne, sans jargon. Lue par une enfant. */
+  texte: z.string().min(1).max(60, 'maximum 60 caractères : ça doit tenir en un coup d’œil'),
+  condition: ConditionSchema,
+});
+
+const idsUniques = (liste: { id: string }[]) => new Set(liste.map((e) => e.id)).size === liste.length;
+
+export const CatalogueRecettesSchema = z
+  .array(RecetteSchema)
+  .refine(idsUniques, { message: 'deux recettes portent le même identifiant' });
+
+export const CatalogueEnnemisSchema = z
+  .array(EnnemiSchema)
+  .refine(idsUniques, { message: 'deux créatures portent le même identifiant' });
+
+export const CatalogueMissionsSchema = z
+  .array(MissionSchema)
+  .min(1)
+  .refine(idsUniques, { message: 'deux missions portent le même identifiant' });
+
+export type Ennemi = z.infer<typeof EnnemiSchema>;

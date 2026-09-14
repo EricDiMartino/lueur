@@ -1,0 +1,32 @@
+[
+  {
+    "id": "slime",
+    "nom": "Gluant",
+    "sprite": "slime",
+    "pointsDeVie": 2,
+    "degats": 1,
+    "vitesse": 38,
+    "porteeAttaque": 26,
+    "distanceDeReveil": 190
+  },
+  {
+    "id": "chauve_souris",
+    "nom": "Chauve-souris",
+    "sprite": "bat",
+    "pointsDeVie": 1,
+    "degats": 1,
+    "vitesse": 72,
+    "porteeAttaque": 24,
+    "distanceDeReveil": 240
+  },
+  {
+    "id": "serpent",
+    "nom": "Couleuvre",
+    "sprite": "snake",
+    "pointsDeVie": 2,
+    "degats": 1,
+    "vitesse": 54,
+    "porteeAttaque": 26,
+    "distanceDeReveil": 210
+  }
+]

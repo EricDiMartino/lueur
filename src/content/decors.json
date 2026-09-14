@@ -62,5 +62,13 @@
     "largeurObstacle": 74,
     "hauteurObstacle": 58,
     "centreObstacleY": 39
+  },
+  {
+    "id": "feu_de_camp",
+    "symbole": "F",
+    "sprite": "feu-de-camp",
+    "solide": true,
+    "largeurObstacle": 30,
+    "hauteurObstacle": 12
   }
 ]

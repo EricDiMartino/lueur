@@ -39,5 +39,26 @@
     "empilable": false,
     "pileMax": 1,
     "degats": 2
+  },
+  {
+    "id": "epee_bois",
+    "nom": "Épée en bois",
+    "categorie": "equipement",
+    "description": "Pour écarter les créatures. Elle tape gentiment.",
+    "sprite": "epee_bois",
+    "empilable": false,
+    "pileMax": 1,
+    "degats": 1
+  },
+  {
+    "id": "compote",
+    "nom": "Compote de baies",
+    "categorie": "nourriture",
+    "description": "Bien meilleure que les baies crues. Ça tient au ventre.",
+    "sprite": "compote",
+    "empilable": true,
+    "pileMax": 10,
+    "satiete": 60,
+    "icone": "buisson-baies"
   }
 ]

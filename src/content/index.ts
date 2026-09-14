@@ -2,16 +2,25 @@ import objetsBruts from './objets.json';
 import terrainsBruts from './terrains.json';
 import decorsBruts from './decors.json';
 import foretBrute from './cartes/foret.json';
+import recettesBrutes from './recettes.json';
+import ennemisBruts from './ennemis.json';
+import missionsBrutes from './missions.json';
 import {
   CarteSchema,
   CatalogueDecorsSchema,
   CatalogueObjetsSchema,
   CatalogueTerrainsSchema,
+  CatalogueRecettesSchema,
+  CatalogueEnnemisSchema,
+  CatalogueMissionsSchema,
   type Carte,
+  type Ennemi,
   type Decor,
   type Objet,
   type Terrain,
 } from './schemas';
+import type { Recette } from '../engine/craft';
+import type { Mission } from '../engine/missions';
 
 /**
  * Point d'entrée unique du contenu.
@@ -24,6 +33,9 @@ export const objets: readonly Objet[] = CatalogueObjetsSchema.parse(objetsBruts)
 export const terrains: readonly Terrain[] = CatalogueTerrainsSchema.parse(terrainsBruts);
 export const decors: readonly Decor[] = CatalogueDecorsSchema.parse(decorsBruts);
 export const cartes: readonly Carte[] = [CarteSchema.parse(foretBrute)];
+export const recettes: readonly Recette[] = CatalogueRecettesSchema.parse(recettesBrutes);
+export const ennemis: readonly Ennemi[] = CatalogueEnnemisSchema.parse(ennemisBruts);
+export const missions: readonly Mission[] = CatalogueMissionsSchema.parse(missionsBrutes);
 
 function indexer<T extends { id: string }>(liste: readonly T[], quoi: string, fichier: string) {
   const parId = new Map(liste.map((e) => [e.id, e]));
@@ -37,6 +49,8 @@ function indexer<T extends { id: string }>(liste: readonly T[], quoi: string, fi
 export const objet = indexer(objets, 'Objet', 'src/content/objets.json');
 export const terrain = indexer(terrains, 'Terrain', 'src/content/terrains.json');
 export const decor = indexer(decors, 'Décor', 'src/content/decors.json');
+export const recette = indexer(recettes, 'Recette', 'src/content/recettes.json');
+export const ennemi = indexer(ennemis, 'Créature', 'src/content/ennemis.json');
 export const carte = indexer(cartes, 'Carte', 'src/content/cartes/');
 
 export const terrainParSymbole = new Map(terrains.map((t) => [t.symbole, t]));
