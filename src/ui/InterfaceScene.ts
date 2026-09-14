@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { objets } from '../content';
 import type { Inventaire } from '../engine/inventaire';
 import { COEURS_MAX, FAIM_MAX, type Survie } from '../engine/survie';
+import { dessinerPanneau, OR } from './panneau';
 
 /**
  * Interface fixe, superposée au monde.
@@ -41,6 +42,11 @@ export class InterfaceScene extends Phaser.Scene {
   private message!: Phaser.GameObjects.Text;
   private panneauMessage!: Phaser.GameObjects.Graphics;
 
+  private indiceFond!: Phaser.GameObjects.Graphics;
+  private indiceTouche!: Phaser.GameObjects.Text;
+  private indiceAction!: Phaser.GameObjects.Text;
+  private indiceCourant: string | null = null;
+
   /** Le monde peut appeler cette scène avant que Phaser l'ait créée. On retient
    *  alors le dernier état connu et on l'applique à la création. */
   private pret = false;
@@ -52,7 +58,26 @@ export class InterfaceScene extends Phaser.Scene {
     super({ key: 'interface', active: false });
   }
 
+  /**
+   * Une scène relancée réutilise la même instance : ses objets d'affichage ont
+   * été détruits par l'extinction précédente, mais pas ses champs. Sans cette
+   * remise à zéro, le monde écrit dans des références mortes.
+   *
+   * Les valeurs « en attente » ne sont volontairement pas effacées : le monde
+   * les écrit juste après avoir lancé cette scène, donc avant que ce init ne
+   * s'exécute. Les remettre à zéro ici ferait perdre l'état restauré.
+   */
+  init(): void {
+    this.pret = false;
+    this.lignesSac = [];
+    this.indiceCourant = null;
+  }
+
   create(): void {
+    this.events.once('shutdown', () => {
+      this.pret = false;
+    });
+
     this.jauges = this.add.graphics();
 
     this.panneauObjectif = this.add.graphics();
@@ -75,6 +100,7 @@ export class InterfaceScene extends Phaser.Scene {
       .setVisible(false);
 
     this.construireSac();
+    this.construireIndice();
 
     this.panneauMessage = this.add.graphics().setVisible(false);
     this.message = this.add
@@ -222,6 +248,55 @@ export class InterfaceScene extends Phaser.Scene {
         .setPosition(cx + 20, y + hauteur / 2)
         .setVisible(true);
     });
+  }
+
+  /**
+   * Bulle d'aide contextuelle, juste au-dessus du sac.
+   *
+   * C'est la réponse au vrai problème : personne ne devine les touches. Plutôt
+   * qu'un manuel à mémoriser, on affiche la touche au moment exact où elle
+   * sert, à côté de la chose qu'elle concerne.
+   */
+  private construireIndice(): void {
+    this.indiceFond = this.add.graphics().setVisible(false);
+    this.indiceTouche = this.add
+      .text(0, 0, '', { fontFamily: 'system-ui, sans-serif', fontSize: '18px', color: OR })
+      .setOrigin(0, 0.5)
+      .setVisible(false);
+    this.indiceAction = this.add
+      .text(0, 0, '', { fontFamily: 'system-ui, sans-serif', fontSize: '17px', color: CREME })
+      .setOrigin(0, 0.5)
+      .setVisible(false);
+  }
+
+  majIndice(touche: string | null, action = ''): void {
+    if (!this.pret) return;
+
+    const cle = touche === null ? null : `${touche}|${action}`;
+    if (cle === this.indiceCourant) return;
+    this.indiceCourant = cle;
+
+    if (touche === null) {
+      this.indiceFond.setVisible(false);
+      this.indiceTouche.setVisible(false);
+      this.indiceAction.setVisible(false);
+      return;
+    }
+
+    this.indiceTouche.setText(touche);
+    this.indiceAction.setText(action);
+
+    const largeur = this.indiceTouche.width + this.indiceAction.width + 52;
+    const hauteur = 42;
+    const x = (this.scale.width - largeur) / 2;
+    const y = this.scale.height - 128;
+
+    dessinerPanneau(this.indiceFond, x, y, largeur, hauteur);
+    this.indiceTouche.setPosition(x + 18, y + hauteur / 2).setVisible(true);
+    this.indiceAction
+      .setPosition(x + 18 + this.indiceTouche.width + 16, y + hauteur / 2)
+      .setVisible(true);
+    this.indiceFond.setVisible(true);
   }
 
   /** Message court et centré, qui s'efface seul. */

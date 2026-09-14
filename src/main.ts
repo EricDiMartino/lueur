@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { MondeScene } from './scenes/MondeScene';
 import { InterfaceScene } from './ui/InterfaceScene';
+import { TitreScene } from './ui/TitreScene';
+import { MenuScene } from './ui/MenuScene';
 
 const jeu = new Phaser.Game({
   type: Phaser.AUTO,
@@ -17,7 +19,8 @@ const jeu = new Phaser.Game({
     default: 'arcade',
     arcade: { gravity: { x: 0, y: 0 } },
   },
-  scene: [MondeScene, InterfaceScene],
+  // L'accueil passe en premier : c'est lui qui apprend les commandes.
+  scene: [TitreScene, MondeScene, InterfaceScene, MenuScene],
 });
 
 // En développement seulement : donne accès au jeu depuis la console du
