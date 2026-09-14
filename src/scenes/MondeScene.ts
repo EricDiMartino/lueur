@@ -5,6 +5,7 @@ import { TAILLE_TUILE, construireCarte } from '../engine/carte';
 import { calculerVitesse, type Commandes, type Direction } from '../engine/deplacement';
 import { ajouter, INVENTAIRE_VIDE, type Inventaire } from '../engine/inventaire';
 import { cibleLaPlusProche, type CibleRecolte } from '../engine/recolte';
+import { ecrire, lire, serialiser, stockageDuNavigateur, type Stockage } from '../engine/sauvegarde';
 import type { InterfaceScene } from '../ui/InterfaceScene';
 
 const VITESSE = 130;
@@ -12,6 +13,8 @@ const VITESSE = 130;
 const PROFONDEUR_SOL = 1;
 /** Opacité d'un décor récolté, le temps qu'il repousse. */
 const ALPHA_EPUISE = 0.55;
+/** Invariant 3 de GAME_DESIGN.md : sauvegarde automatique toutes les 30 s. */
+const INTERVALLE_SAUVEGARDE_MS = 30_000;
 
 /** Ordre des rangées dans les planches d'animation LPC. */
 const RANGEE: Record<Direction, number> = { haut: 0, gauche: 1, bas: 2, droite: 3 };
@@ -31,6 +34,7 @@ export class MondeScene extends Phaser.Scene {
   private recoltables: DecorEnJeu[] = [];
   private inventaire: Inventaire = INVENTAIRE_VIDE;
   private surbrillance!: Phaser.GameObjects.Ellipse;
+  private stockage: Stockage = stockageDuNavigateur();
 
   constructor() {
     super('monde');
@@ -146,7 +150,54 @@ export class MondeScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.joueuse, true, 0.1, 0.1);
 
     this.touches = this.lireTouches();
+    this.restaurerLaPartie();
     this.scene.launch('interface');
+    // L'interface n'est pas encore construite : elle retient cet état et
+    // l'applique à sa création. Sans ça, un sac restauré s'afficherait vide.
+    this.interface.majSac(this.inventaire);
+
+    this.time.addEvent({
+      delay: INTERVALLE_SAUVEGARDE_MS,
+      loop: true,
+      callback: () => this.sauvegarder(),
+    });
+
+    // Fermer l'onglet ne doit rien coûter : on sauve aussi au dernier moment.
+    const sauverAvantDeQuitter = () => this.sauvegarder();
+    window.addEventListener('pagehide', sauverAvantDeQuitter);
+    this.events.once('shutdown', () => window.removeEventListener('pagehide', sauverAvantDeQuitter));
+  }
+
+  private sauvegarder(): void {
+    const epuises = this.recoltables.filter((r) => !r.disponible).map((r) => r.id);
+    ecrire(
+      this.stockage,
+      serialiser({ x: this.joueuse.x, y: this.joueuse.y }, this.inventaire, epuises),
+    );
+  }
+
+  /**
+   * Recharge la partie précédente si elle est lisible.
+   *
+   * Les décors récoltés sont restaurés dans leur état épuisé, mais leur
+   * repousse est relancée à l'ouverture : il n'y a aucun intérêt à faire
+   * attendre quelqu'un qui vient de revenir.
+   */
+  private restaurerLaPartie(): void {
+    const partie = lire(this.stockage);
+    if (!partie) return;
+
+    this.joueuse.setPosition(partie.position.x, partie.position.y);
+    this.inventaire = partie.inventaire;
+
+    const epuises = new Set(partie.decorsEpuises);
+    for (const recoltable of this.recoltables) {
+      if (!epuises.has(recoltable.id) || !recoltable.decor.recolte) continue;
+      recoltable.disponible = false;
+      recoltable.sprite.setTexture(recoltable.decor.recolte.spriteEpuise);
+      recoltable.sprite.setAlpha(ALPHA_EPUISE);
+      this.programmerRepousse(recoltable);
+    }
   }
 
   private creerAnimations(): void {
@@ -204,8 +255,14 @@ export class MondeScene extends Phaser.Scene {
 
     this.interface.majSac(this.inventaire);
     this.gainFlottant(cible.x, cible.y - 20, `+${resultat.ajoute} ${definition.nom}`);
+    this.programmerRepousse(cible);
+    this.sauvegarder();
+  }
 
-    // Rien n'est définitivement perdu : la ressource revient toujours.
+  /** Rien n'est définitivement perdu : la ressource revient toujours. */
+  private programmerRepousse(cible: DecorEnJeu): void {
+    const recolte = cible.decor.recolte;
+    if (!recolte) return;
     this.time.delayedCall(recolte.repousseSecondes * 1000, () => {
       cible.disponible = true;
       cible.sprite.setTexture(cible.decor.sprite);

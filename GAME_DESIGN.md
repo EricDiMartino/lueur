@@ -42,7 +42,11 @@ refusée par défaut ; il faut une décision explicite de l'arbitre pour la leve
 1. **Aucun écran de game over.** Mourir renvoie au campement, rien de plus.
 2. **Aucune perte irréversible.** À la mort : la moitié des ressources brutes.
    Jamais les outils, l'équipement ni les objets de quête.
-3. **Sauvegarde automatique** toutes les 30 secondes et à chaque changement de zone.
+3. **Sauvegarde automatique** toutes les 30 secondes, à chaque récolte et à la
+   fermeture de l'onglet. Jamais demandée à la joueuse : elle n'a pas à savoir
+   que ça existe, elle doit simplement retrouver sa partie en revenant.
+   Une sauvegarde illisible est ignorée et la partie repart proprement — refuser
+   de démarrer serait le pire comportement possible.
 4. **Un seul objectif affiché à la fois**, en haut à gauche, en une phrase courte.
 5. **Icônes plutôt que texte.** Aucune progression ne dépend de la lecture d'un
    texte long. Police large et lisible partout.
