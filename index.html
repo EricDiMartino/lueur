@@ -27,6 +27,27 @@
   </head>
   <body>
     <div id="jeu"></div>
+    <script>
+      // Après un déploiement, un navigateur peut encore avoir cette page en
+      // cache alors qu'elle réclame un fichier de jeu qui n'existe plus : la
+      // page reste noire, sans message. On recharge alors une seule fois en
+      // contournant le cache. Le drapeau en session empêche toute boucle.
+      window.addEventListener(
+        'error',
+        function (evenement) {
+          if (!(evenement.target instanceof HTMLScriptElement)) return;
+          try {
+            if (sessionStorage.getItem('rechargement-cache')) return;
+            sessionStorage.setItem('rechargement-cache', '1');
+          } catch (e) {
+            // Stockage indisponible (navigation privée) : on recharge quand même,
+            // au pire une fois de trop.
+          }
+          location.replace(location.pathname + '?r=' + Date.now());
+        },
+        true,
+      );
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
