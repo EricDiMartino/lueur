@@ -1,0 +1,26 @@
+{
+  "name": "lueur",
+  "version": "0.1.0",
+  "description": "Jeu d aventure 2D — melange Don t Starve / Zelda, concu pour une joueuse de 9 ans",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run check && npm run validate && vite build",
+    "preview": "vite preview",
+    "check": "tsc --noEmit",
+    "validate": "tsx scripts/validate-content.ts",
+    "test": "vitest run"
+  },
+  "type": "module",
+  "dependencies": {
+    "phaser": "^4.2.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.5.1",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.0"
+  },
+  "private": true
+}

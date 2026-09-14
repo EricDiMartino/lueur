@@ -1,0 +1,37 @@
+name: "🐞 Quelque chose ne marche pas"
+description: "Un bug, un blocage, un comportement bizarre."
+labels: ["bug"]
+body:
+  - type: textarea
+    id: attendu
+    attributes:
+      label: Ce qui devait se passer
+    validations: { required: true }
+  - type: textarea
+    id: reel
+    attributes:
+      label: Ce qui s'est passé à la place
+    validations: { required: true }
+  - type: textarea
+    id: repro
+    attributes:
+      label: Comment le reproduire
+      placeholder: |
+        1. Aller dans la forêt
+        2. Taper l'arbre trois fois
+        3. Le personnage traverse l'arbre
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes:
+      label: Sur quelle version
+      placeholder: "Lien de preview de la PR #12, ou version de référence"
+  - type: dropdown
+    id: gravite
+    attributes:
+      label: Gravité
+      options:
+        - "Bloquant — on ne peut plus jouer"
+        - "Gênant — jouable mais pénible"
+        - "Cosmétique — ça se voit, ça ne gêne pas"
+    validations: { required: true }

@@ -1,0 +1,40 @@
+[
+  {
+    "id": "bois",
+    "nom": "Bûche",
+    "categorie": "ressource",
+    "description": "Un bon morceau de bois. Sert à fabriquer presque tout.",
+    "sprite": "bois",
+    "empilable": true,
+    "pileMax": 40
+  },
+  {
+    "id": "pierre",
+    "nom": "Caillou",
+    "categorie": "ressource",
+    "description": "Dur et lourd. Parfait pour un outil solide.",
+    "sprite": "pierre",
+    "empilable": true,
+    "pileMax": 40
+  },
+  {
+    "id": "baie",
+    "nom": "Baie rouge",
+    "categorie": "nourriture",
+    "description": "Sucrée. Ça remplit un peu le ventre.",
+    "sprite": "baie",
+    "empilable": true,
+    "pileMax": 20,
+    "satiete": 15
+  },
+  {
+    "id": "hache_bois",
+    "nom": "Hache en bois",
+    "categorie": "outil",
+    "description": "Coupe les arbres. Tape aussi, mais pas très fort.",
+    "sprite": "hache_bois",
+    "empilable": false,
+    "pileMax": 1,
+    "degats": 2
+  }
+]

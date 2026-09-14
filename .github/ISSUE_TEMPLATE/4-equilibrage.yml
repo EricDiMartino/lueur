@@ -1,0 +1,21 @@
+name: "⚖️ Réglage ou équilibrage"
+description: "Trop dur, trop lent, trop rare, trop cher."
+labels: ["equilibrage"]
+body:
+  - type: input
+    id: quoi
+    attributes:
+      label: Qu'est-ce qui est mal réglé
+      placeholder: "La jauge de faim descend trop vite"
+    validations: { required: true }
+  - type: textarea
+    id: constat
+    attributes:
+      label: Ce qu'on observe en jouant
+      placeholder: "Elle doit manger toutes les 3 minutes, ça coupe l'exploration."
+    validations: { required: true }
+  - type: input
+    id: propose
+    attributes:
+      label: Valeur proposée (si vous en avez une)
+      placeholder: "Vider la jauge en 15 minutes au lieu de 5"

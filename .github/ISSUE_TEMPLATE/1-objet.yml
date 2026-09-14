@@ -1,0 +1,36 @@
+name: "🎒 Nouvel objet ou recette"
+description: "Ajouter un objet à ramasser, fabriquer ou équiper."
+labels: ["contenu"]
+body:
+  - type: markdown
+    attributes:
+      value: "Un objet simple peut aussi s'ajouter directement dans `src/content/objets.json` depuis GitHub, sans passer par ici."
+  - type: input
+    id: nom
+    attributes:
+      label: Nom affiché dans le jeu
+      placeholder: "Hache en pierre"
+    validations: { required: true }
+  - type: dropdown
+    id: categorie
+    attributes:
+      label: Catégorie
+      options: [ressource, outil, equipement, nourriture, quete]
+    validations: { required: true }
+  - type: textarea
+    id: role
+    attributes:
+      label: À quoi ça sert
+      description: "L'effet concret en jeu."
+      placeholder: "Coupe les arbres deux fois plus vite que la hache en bois."
+    validations: { required: true }
+  - type: textarea
+    id: recette
+    attributes:
+      label: Comment on l'obtient
+      placeholder: "Fabriqué au campement avec 2 bûches et 3 cailloux."
+  - type: input
+    id: sprite
+    attributes:
+      label: Sprite souhaité (si vous en avez un en tête)
+      placeholder: "Pack Kenney, tuile n°42"

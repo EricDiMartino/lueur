@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verification:
+    name: Vérification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typage
+        run: npm run check
+
+      - name: Contenu (objets, recettes, ennemis…)
+        run: npm run validate
+
+      - name: Tests
+        run: npm run test
+
+      - name: Build
+        run: npx vite build

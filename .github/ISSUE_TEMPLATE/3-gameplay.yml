@@ -1,0 +1,31 @@
+name: "💡 Idée de gameplay"
+description: "Une nouvelle mécanique, un ennemi, un donjon, une zone."
+labels: ["gameplay"]
+body:
+  - type: textarea
+    id: idee
+    attributes:
+      label: L'idée
+    validations: { required: true }
+  - type: textarea
+    id: pourquoi
+    attributes:
+      label: Ce que ça apporte à la joueuse
+      description: "Plus de plaisir, plus de clarté, plus de rejouabilité… en une phrase."
+    validations: { required: true }
+  - type: dropdown
+    id: palier
+    attributes:
+      label: Quand
+      options:
+        - "Maintenant — ça manque vraiment"
+        - "Plus tard — à garder de côté"
+    validations: { required: true }
+  - type: checkboxes
+    id: invariants
+    attributes:
+      label: Accessibilité
+      description: "Voir GAME_DESIGN.md, section 2. Ces sept règles priment sur toute idée."
+      options:
+        - label: "J'ai vérifié que cette idée ne casse aucun des sept invariants"
+          required: true
