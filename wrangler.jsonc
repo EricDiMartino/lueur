@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  // Doit correspondre au nom du projet dans Cloudflare, sinon un second
+  // Worker est créé au lieu de mettre celui-ci à jour.
+  "name": "lueur",
+  "compatibility_date": "2026-09-14",
+  // Site statique : aucun code Worker, Cloudflare sert directement les
+  // fichiers produits par `npm run build`.
+  "assets": {
+    "directory": "./dist"
+  }
+}
