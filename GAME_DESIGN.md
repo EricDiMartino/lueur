@@ -128,8 +128,8 @@ src/
   scenes/     Écrans Phaser : boot, menu, monde, donjon, inventaire
   content/    Données JSON : objets, recettes, ennemis, cartes, textes
   ui/         Barres de vie, faim, objectif courant, menus
-assets/       Sprites, tuiles, sons
-scripts/      Outils de build (validation du contenu)
+public/assets/  Sprites, tuiles, sons — servis tels quels, crédits inclus
+scripts/      Outils de build (validation du contenu, fabrication des sprites)
 tests/        Tests de la logique pure (pas du rendu)
 
 GAME_DESIGN.md  Ce document — la référence du projet
@@ -154,8 +154,13 @@ de casser le jeu en silence. C'est indispensable dès lors que des non-développ
 
 ### Assets
 
-Packs pixel art sous licence libre (CC0 / Kenney / itch.io). Chaque pack utilisé est
-tracé dans `assets/CREDITS.md` avec sa licence et sa source.
+**Liberated Pixel Cup (LPC)**, sous CC-BY-SA 3.0 / GPL 3.0 : tuiles de 32 px,
+personnages de 64 px animés en quatre directions, ennemis inclus.
+
+L'attribution nominative est obligatoire : elle est livrée avec le jeu dans
+`public/assets/CREDITS.md` et `public/assets/licences/`. Le partage à l'identique
+n'a pas d'effet pratique pour un usage familial privé, mais il interdirait une
+diffusion sous licence fermée — décision actée le 14 septembre 2026.
 
 ---
 
