@@ -50,6 +50,10 @@ refusée par défaut ; il faut une décision explicite de l'arbitre pour la leve
 4. **Un seul objectif affiché à la fois**, en haut à gauche, en une phrase courte.
 5. **Icônes plutôt que texte.** Aucune progression ne dépend de la lecture d'un
    texte long. Police large et lisible partout.
+   Corollaire appris à l'usage : **aucune touche ne doit être devinée**. Les
+   commandes sont affichées à l'accueil, rappelées dans le menu de pause, et
+   surtout proposées en contexte — la touche apparaît au moment où elle sert,
+   à côté de la chose qu'elle concerne.
 6. **Aucun timer stressant**, aucun son agressif, aucune pression temporelle.
 7. **Mode balade**, touche **B** : gèle la faim, efface les créatures et rend le
    plein jour. Pour explorer tranquillement, sans rien à gérer.
@@ -70,8 +74,11 @@ Une boucle complète : environ 20 à 30 minutes au MVP.
 
 - **Faim** : une jauge qui se vide en ~15 minutes de jeu. À vide, le personnage
   ralentit et perd un cœur toutes les 20 secondes. Jamais de mort brutale.
-- **Nuit** : l'écran s'assombrit, quelques ennemis de plus. Le campement reste sûr
-  et éclairé. La nuit dure 2 minutes contre 6 pour le jour.
+- **Nuit** : l'écran s'assombrit, les créatures sont plus nombreuses. Le
+  campement reste sûr et éclairé. La nuit dure 2 minutes contre 6 pour le jour.
+- **Créatures de jour** : il y en a aussi en pleine journée, loin du campement.
+  N'en mettre que la nuit revenait à n'en montrer aucune avant six minutes de
+  jeu, et la joueuse concluait qu'il n'y avait pas de méchants du tout.
 - **Écarté du MVP** : saisons, température, santé mentale, faim des compagnons.
 
 ### Récolte
@@ -98,6 +105,16 @@ suffit à l'éviter — sans ce signal, se faire toucher paraît arbitraire.
 Tomber à zéro cœur réveille au campement. Ni écran, ni compte à rebours : on
 perd la moitié de ses ressources brutes, jamais les outils, l'équipement ni la
 nourriture.
+
+### Découvrabilité
+
+Un écran d'accueil ouvre le jeu et affiche les commandes avant même de
+commencer. Le menu de pause (Échap) les rappelle et donne accès au mode balade
+sans raccourci à connaître. Tout y est cliquable autant que navigable au
+clavier : à 9 ans on tend la main vers la souris avant de chercher une touche.
+
+En jeu, une bulle affiche une seule aide à la fois, choisie selon la situation :
+la plus utile sur l'instant. Enchaîner les conseils reviendrait à ne rien dire.
 
 ### Le campement
 

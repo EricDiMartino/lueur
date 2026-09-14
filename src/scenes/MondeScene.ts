@@ -5,7 +5,7 @@ import { TAILLE_TUILE, construireCarte } from '../engine/carte';
 import { calculerVitesse, type Commandes, type Direction } from '../engine/deplacement';
 import { ajouter, INVENTAIRE_VIDE, quantite, retirer, type Inventaire } from '../engine/inventaire';
 import { cibleLaPlusProche, type CibleRecolte } from '../engine/recolte';
-import { ecrire, lire, serialiser, stockageDuNavigateur, type Stockage } from '../engine/sauvegarde';
+import { ecrire, effacer, lire, serialiser, stockageDuNavigateur, type Stockage } from '../engine/sauvegarde';
 import {
   avancer as avancerSurvie,
   blesser,
@@ -41,8 +41,15 @@ const ALPHA_EPUISE = 0.55;
 const INTERVALLE_SAUVEGARDE_MS = 30_000;
 /** Rayon du campement : zone sûre, station de fabrication, point de réveil. */
 const RAYON_DU_CAMP = 96;
-/** Nombre maximal de créatures présentes en même temps. */
-const CREATURES_MAX = 6;
+/**
+ * Nombre maximal de créatures présentes en même temps.
+ *
+ * Il y en a aussi le jour, loin du campement : n'en mettre que la nuit revenait
+ * à n'en montrer aucune avant six minutes de jeu, et la joueuse concluait
+ * qu'il n'y avait pas de méchants du tout.
+ */
+const CREATURES_MAX_JOUR = 3;
+const CREATURES_MAX_NUIT = 6;
 /** Distance minimale d'apparition d'une créature, pour ne jamais surgir dessus. */
 const DISTANCE_APPARITION_MIN = 200;
 
@@ -63,6 +70,7 @@ export class MondeScene extends Phaser.Scene {
   private toucheManger!: Phaser.Input.Keyboard.Key;
   private toucheFabriquer!: Phaser.Input.Keyboard.Key;
   private toucheBalade!: Phaser.Input.Keyboard.Key;
+  private toucheMenu!: Phaser.Input.Keyboard.Key;
   private derniereDirection: Direction = 'bas';
 
   private recoltables: DecorEnJeu[] = [];
@@ -85,8 +93,26 @@ export class MondeScene extends Phaser.Scene {
   private surbrillance!: Phaser.GameObjects.Ellipse;
   private stockage: Stockage = stockageDuNavigateur();
 
+  private nouvellePartieDemandee = false;
+
   constructor() {
     super('monde');
+  }
+
+  init(donnees: { modeBalade?: boolean; nouvellePartie?: boolean } = {}): void {
+    // L'interface doit être éteinte avant d'être relancée, sinon elle se croit
+    // encore prête et le monde écrit dans des objets déjà détruits.
+    this.scene.stop('interface');
+    this.modeBalade = donnees.modeBalade ?? false;
+    this.nouvellePartieDemandee = donnees.nouvellePartie ?? false;
+    // Une scène relancée conserve ses champs : on repart d'un état propre.
+    this.recoltables = [];
+    this.creatures = [];
+    this.inventaire = INVENTAIRE_VIDE;
+    this.survie = SURVIE_NEUVE;
+    this.etatMissions = MISSIONS_NEUVES;
+    this.secondesEcoulees = 0;
+    this.jourAffiche = 1;
   }
 
   preload(): void {
@@ -255,6 +281,9 @@ export class MondeScene extends Phaser.Scene {
       loop: true,
       callback: () => this.tenterUneApparition(),
     });
+    // Une première créature dès les premières secondes : sans elle, la joueuse
+    // conclut qu'il n'y a pas de méchants et cesse de chercher.
+    this.time.delayedCall(2_500, () => this.tenterUneApparition());
 
     // Fermer l'onglet ne doit rien coûter : on sauve aussi au dernier moment.
     const sauverAvantDeQuitter = () => this.sauvegarder();
@@ -283,8 +312,14 @@ export class MondeScene extends Phaser.Scene {
    * attendre quelqu'un qui vient de revenir.
    */
   private restaurerLaPartie(): void {
+    if (this.nouvellePartieDemandee) {
+      effacer(this.stockage);
+      return;
+    }
     const partie = lire(this.stockage);
     if (!partie) return;
+    // Le mode choisi à l'accueil prime sur celui de la sauvegarde.
+    const baladeChoisie = this.modeBalade;
 
     this.joueuse.setPosition(partie.position.x, partie.position.y);
     this.inventaire = partie.inventaire;
@@ -292,7 +327,7 @@ export class MondeScene extends Phaser.Scene {
     this.secondesEcoulees = partie.secondesEcoulees;
     this.jourAffiche = numeroDuJour(partie.secondesEcoulees);
     this.etatMissions = partie.missions;
-    this.modeBalade = partie.modeBalade;
+    this.modeBalade = baladeChoisie || partie.modeBalade;
 
     const epuises = new Set(partie.decorsEpuises);
     for (const recoltable of this.recoltables) {
@@ -343,6 +378,7 @@ export class MondeScene extends Phaser.Scene {
     this.toucheManger = clavier.addKey(T.A);
     this.toucheFabriquer = clavier.addKey(T.C);
     this.toucheBalade = clavier.addKey(T.B);
+    this.toucheMenu = clavier.addKey(T.ESC);
     // Flèches, ZQSD et WASD actifs en même temps : voir GAME_DESIGN.md § 5.
     return {
       haut: k(T.UP, T.Z, T.W),
@@ -582,8 +618,8 @@ export class MondeScene extends Phaser.Scene {
    */
   private tenterUneApparition(): void {
     if (this.modeBalade) return;
-    if (phase(this.secondesEcoulees) !== 'nuit') return;
-    if (this.creatures.length >= CREATURES_MAX) return;
+    const laNuit = phase(this.secondesEcoulees) === 'nuit';
+    if (this.creatures.length >= (laNuit ? CREATURES_MAX_NUIT : CREATURES_MAX_JOUR)) return;
 
     const definition = ennemis[Math.floor(Math.random() * ennemis.length)];
     if (!definition) return;
@@ -593,7 +629,10 @@ export class MondeScene extends Phaser.Scene {
       const x = Phaser.Math.Between(60, bornes.width - 60);
       const y = Phaser.Math.Between(60, bornes.height - 60);
       if (Phaser.Math.Distance.Between(x, y, this.joueuse.x, this.joueuse.y) < DISTANCE_APPARITION_MIN) continue;
-      if (Phaser.Math.Distance.Between(x, y, this.camp.x, this.camp.y) < RAYON_DU_CAMP * 1.5) continue;
+      // Le jour, on les tient plus loin encore du campement : les abords
+      // immédiats doivent rester un endroit calme où souffler.
+      const distanceMinimaleAuCamp = RAYON_DU_CAMP * (laNuit ? 1.5 : 2.5);
+      if (Phaser.Math.Distance.Between(x, y, this.camp.x, this.camp.y) < distanceMinimaleAuCamp) continue;
 
       const creature = new CreatureEnJeu(definition, this, x, y);
       this.groupeCreatures.add(creature.sprite);
@@ -610,8 +649,9 @@ export class MondeScene extends Phaser.Scene {
       // déclencher le réveil au campement, qui les efface toutes d'un coup.
       if (!creature.sprite.active || !creature.sprite.body) continue;
 
-      // Le jour venu, les créatures s'effacent plutôt que d'être tuées d'office.
-      if (phase(this.secondesEcoulees) === 'jour' || this.modeBalade) {
+      // Seul le mode balade les efface. Elles s'effacent en douceur plutôt que
+      // d'être supprimées d'office : disparaître d'un coup se remarque.
+      if (this.modeBalade) {
         this.tweens.add({
           targets: creature.sprite,
           alpha: 0,
@@ -717,13 +757,67 @@ export class MondeScene extends Phaser.Scene {
     if (J(this.toucheFabriquer)) this.tenterDeFabriquer();
     if (J(this.toucheAttaque) && this.msDepuisDernierCoup >= MS_ENTRE_DEUX_COUPS) this.frapper();
 
-    if (J(this.toucheBalade)) {
-      this.modeBalade = !this.modeBalade;
-      this.interface.majModeBalade(this.modeBalade);
-      this.interface.messagePassager(
-        this.modeBalade ? 'Mode balade : plus de faim ni de créatures' : 'Mode balade arrêté',
-      );
+    if (J(this.toucheBalade)) this.basculerModeBalade(!this.modeBalade);
+    if (J(this.toucheMenu)) this.ouvrirLeMenu();
+  }
+
+  private basculerModeBalade(actif: boolean): void {
+    this.modeBalade = actif;
+    this.interface.majModeBalade(actif);
+    this.interface.messagePassager(
+      actif ? 'Mode balade : plus de faim ni de créatures' : 'Mode balade arrêté',
+    );
+    this.sauvegarder();
+  }
+
+  private ouvrirLeMenu(): void {
+    this.sauvegarder();
+    this.scene.pause();
+    this.scene.launch('menu', {
+      modeBalade: this.modeBalade,
+      surReprendre: () => this.scene.resume(),
+      surModeBalade: (actif: boolean) => {
+        this.scene.resume();
+        this.basculerModeBalade(actif);
+      },
+      surRecommencer: () => {
+        this.scene.stop('menu');
+        this.scene.stop('interface');
+        this.scene.start('monde', { modeBalade: false, nouvellePartie: true });
+      },
+    });
+  }
+
+  /**
+   * Choisit l'aide à afficher selon la situation.
+   *
+   * L'ordre compte : on montre l'action la plus immédiatement utile, une seule
+   * à la fois. Enchaîner les conseils reviendrait à ne rien dire.
+   */
+  private indiceContextuel(cible: DecorEnJeu | null): void {
+    const creatureProche = this.creatures.some(
+      (c) =>
+        c.sprite.active &&
+        Phaser.Math.Distance.Between(c.sprite.x, c.sprite.y, this.joueuse.x, this.joueuse.y) < 120,
+    );
+
+    if (creatureProche && this.aUneEpee) {
+      this.interface.majIndice('Espace', 'donner un coup d’épée');
+    } else if (creatureProche) {
+      this.interface.majIndice('C', 'fabriquer une épée, près du feu');
+    } else if (this.estAuCampement) {
+      this.interface.majIndice('C', 'fabriquer');
+    } else if (cible) {
+      this.interface.majIndice('E', `ramasser ${objet(cible.decor.recolte!.objet).nom.toLowerCase()}`);
+    } else if (this.survie.faim < 35 && this.aDeQuoiManger) {
+      this.interface.majIndice('A', 'manger');
+    } else {
+      this.interface.majIndice(null);
     }
+  }
+
+  private get aDeQuoiManger(): boolean {
+    return objets.some((o) => o.satiete && quantite(this.inventaire, o.id) > 0);
   }
 
   private majSurbrillance(): void {
@@ -739,6 +833,8 @@ export class MondeScene extends Phaser.Scene {
     } else {
       this.surbrillance.setVisible(false);
     }
+
+    this.indiceContextuel(cible);
 
     if (cible && Phaser.Input.Keyboard.JustDown(this.toucheRecolte)) {
       this.recolter(cible);
