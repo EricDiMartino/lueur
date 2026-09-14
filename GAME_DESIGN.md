@@ -21,6 +21,12 @@ hostile : la mort définitive, la santé mentale, la faim punitive, l'ambiance s
 **Ton visuel** : pixel art coloré et chaleureux. Créatures expressives, jamais
 effrayantes. Pas de sang, pas d'ambiance angoissante.
 
+**Direction de référence** (14 septembre 2026) : une illustration peinte de forêt
+habitée — cabane, feu de camp, animaux, interface en panneaux arrondis vert
+sombre. Le rendu peint lui-même n'est pas atteignable avec des assets libres et
+n'est pas visé. Ce qui l'est, et qui produit l'essentiel de l'effet : l'interface,
+la composition du monde, la vie ambiante et la densité de décor.
+
 ---
 
 ## 2. La joueuse
@@ -63,6 +69,20 @@ Une boucle complète : environ 20 à 30 minutes au MVP.
 - **Nuit** : l'écran s'assombrit, quelques ennemis de plus. Le campement reste sûr
   et éclairé. La nuit dure 2 minutes contre 6 pour le jour.
 - **Écarté du MVP** : saisons, température, santé mentale, faim des compagnons.
+
+### Récolte
+
+Un bouton unique, **E**, agit sur la ressource la plus proche dans un rayon
+généreux. Un halo signale en permanence ce qui est à portée : à 9 ans on appuie
+en étant approximativement au bon endroit, viser juste serait frustrant.
+
+**Les ressources repoussent toujours.** Un arbre récolté s'éclaircit puis
+redevient normal, un buisson perd ses fruits puis les retrouve. La forêt ne peut
+pas être détruite, et rien n'est définitivement perdu — c'est l'invariant 2
+appliqué au monde et non seulement au sac.
+
+Quand le sac est plein, le surplus est **refusé** et annoncé, jamais absorbé en
+silence : une récolte qui disparaît sans explication est incompréhensible.
 
 ### Combat
 
