@@ -30,6 +30,10 @@ export const ObjetSchema = z.object({
   satiete: z.number().int().positive().optional(),
   /** Dégâts infligés. Réservé aux outils et équipements. */
   degats: z.number().int().positive().optional(),
+  /** Sprite servant d'icône dans le sac. Doit être un sprite déjà utilisé par
+   *  un décor : on n'a pas de jeu d'icônes dédié, on montre donc ce qui produit
+   *  la ressource — lisible sans savoir lire. */
+  icone: z.string().min(1).optional(),
 });
 
 export const CatalogueObjetsSchema = z
@@ -53,23 +57,40 @@ export const TerrainSchema = z.object({
   traversable: z.boolean(),
 });
 
-export const DecorSchema = z.object({
-  id: Identifiant,
-  symbole: Symbole,
-  /** Nom du fichier dans public/assets/sprites/, sans l'extension. */
-  sprite: z.string().min(1),
-  solide: z.boolean(),
-  /** Un décor au sol (une mare, une flaque) se dessine sous les personnages ;
-   *  un décor dressé (un arbre) se range en profondeur selon son pied. */
-  auSol: z.boolean().default(false),
-  /** Zone de blocage au pied du décor, en pixels. Bien plus petite que le sprite :
-   *  on doit pouvoir passer derrière un arbre sans se cogner à son feuillage. */
-  largeurObstacle: z.number().int().positive(),
-  hauteurObstacle: z.number().int().positive(),
-  /** Hauteur du centre de la zone de blocage au-dessus du pied du sprite.
-   *  Par défaut la zone est posée sur le pied, ce qui convient aux décors dressés. */
-  centreObstacleY: z.number().int().nonnegative().optional(),
+export const RecolteSchema = z.object({
+  /** Identifiant d'un objet de objets.json. */
+  objet: Identifiant,
+  quantite: z.number().int().positive(),
+  /** Sprite affiché une fois récolté, le temps que ça repousse. */
+  spriteEpuise: z.string().min(1),
+  /** Délai de repousse. La ressource revient toujours : rien n'est définitivement
+   *  perdu dans ce jeu (invariant 2 de GAME_DESIGN.md). */
+  repousseSecondes: z.number().int().positive(),
 });
+
+export const DecorSchema = z
+  .object({
+    id: Identifiant,
+    symbole: Symbole,
+    /** Nom du fichier dans public/assets/sprites/, sans l'extension. */
+    sprite: z.string().min(1),
+    solide: z.boolean(),
+    /** Un décor au sol (une mare, une flaque) se dessine sous les personnages ;
+     *  un décor dressé (un arbre) se range en profondeur selon son pied. */
+    auSol: z.boolean().default(false),
+    /** Zone de blocage au pied du décor, en pixels. Bien plus petite que le sprite :
+     *  on doit pouvoir passer derrière un arbre sans se cogner à son feuillage. */
+    largeurObstacle: z.number().int().positive().optional(),
+    hauteurObstacle: z.number().int().positive().optional(),
+    /** Hauteur du centre de la zone de blocage au-dessus du pied du sprite.
+     *  Par défaut la zone est posée sur le pied, ce qui convient aux décors dressés. */
+    centreObstacleY: z.number().int().nonnegative().optional(),
+    /** Présent si le décor se récolte. Absent sinon. */
+    recolte: RecolteSchema.optional(),
+  })
+  .refine((d) => !d.solide || (d.largeurObstacle !== undefined && d.hauteurObstacle !== undefined), {
+    message: 'un décor solide doit indiquer largeurObstacle et hauteurObstacle',
+  });
 
 const symbolesUniques = (liste: { symbole: string }[]) =>
   new Set(liste.map((e) => e.symbole)).size === liste.length;

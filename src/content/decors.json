@@ -5,7 +5,13 @@
     "sprite": "arbre-feuillu",
     "solide": true,
     "largeurObstacle": 28,
-    "hauteurObstacle": 18
+    "hauteurObstacle": 18,
+    "recolte": {
+      "objet": "bois",
+      "quantite": 2,
+      "spriteEpuise": "arbre-feuillu",
+      "repousseSecondes": 25
+    }
   },
   {
     "id": "arbre_sapin",
@@ -13,7 +19,39 @@
     "sprite": "arbre-sapin",
     "solide": true,
     "largeurObstacle": 28,
-    "hauteurObstacle": 18
+    "hauteurObstacle": 18,
+    "recolte": {
+      "objet": "bois",
+      "quantite": 2,
+      "spriteEpuise": "arbre-sapin",
+      "repousseSecondes": 25
+    }
+  },
+  {
+    "id": "buisson_baies",
+    "symbole": "B",
+    "sprite": "buisson-baies",
+    "solide": false,
+    "recolte": {
+      "objet": "baie",
+      "quantite": 3,
+      "spriteEpuise": "buisson-cueilli",
+      "repousseSecondes": 40
+    }
+  },
+  {
+    "id": "rocher",
+    "symbole": "R",
+    "sprite": "rocher",
+    "solide": true,
+    "largeurObstacle": 26,
+    "hauteurObstacle": 14,
+    "recolte": {
+      "objet": "pierre",
+      "quantite": 2,
+      "spriteEpuise": "rocher-casse",
+      "repousseSecondes": 50
+    }
   },
   {
     "id": "mare",

@@ -6,7 +6,8 @@
     "description": "Un bon morceau de bois. Sert à fabriquer presque tout.",
     "sprite": "bois",
     "empilable": true,
-    "pileMax": 40
+    "pileMax": 40,
+    "icone": "icone-bois"
   },
   {
     "id": "pierre",
@@ -15,7 +16,8 @@
     "description": "Dur et lourd. Parfait pour un outil solide.",
     "sprite": "pierre",
     "empilable": true,
-    "pileMax": 40
+    "pileMax": 40,
+    "icone": "rocher"
   },
   {
     "id": "baie",
@@ -25,7 +27,8 @@
     "sprite": "baie",
     "empilable": true,
     "pileMax": 20,
-    "satiete": 15
+    "satiete": 15,
+    "icone": "buisson-baies"
   },
   {
     "id": "hache_bois",
