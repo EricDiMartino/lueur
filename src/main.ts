@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
-import { BootScene } from './scenes/BootScene';
+import { MondeScene } from './scenes/MondeScene';
+import { InterfaceScene } from './ui/InterfaceScene';
 
-new Phaser.Game({
+const jeu = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'jeu',
   width: 960,
@@ -16,5 +17,11 @@ new Phaser.Game({
     default: 'arcade',
     arcade: { gravity: { x: 0, y: 0 } },
   },
-  scene: [BootScene],
+  scene: [MondeScene, InterfaceScene],
 });
+
+// En développement seulement : donne accès au jeu depuis la console du
+// navigateur, pour inspecter l'état sans instrumenter le code de jeu.
+if (import.meta.env.DEV) {
+  (globalThis as unknown as { jeu: Phaser.Game }).jeu = jeu;
+}

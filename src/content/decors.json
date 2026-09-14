@@ -1,0 +1,28 @@
+[
+  {
+    "id": "arbre_feuillu",
+    "symbole": "T",
+    "sprite": "arbre-feuillu",
+    "solide": true,
+    "largeurObstacle": 28,
+    "hauteurObstacle": 18
+  },
+  {
+    "id": "arbre_sapin",
+    "symbole": "Y",
+    "sprite": "arbre-sapin",
+    "solide": true,
+    "largeurObstacle": 28,
+    "hauteurObstacle": 18
+  },
+  {
+    "id": "mare",
+    "symbole": "O",
+    "sprite": "mare",
+    "solide": true,
+    "auSol": true,
+    "largeurObstacle": 74,
+    "hauteurObstacle": 58,
+    "centreObstacleY": 48
+  }
+]

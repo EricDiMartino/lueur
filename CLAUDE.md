@@ -58,7 +58,9 @@ src/
   scenes/     Écrans Phaser
   content/    JSON + schémas zod
   ui/         Affichage des jauges, objectif courant, menus
-assets/       Sprites, tuiles, sons  (licences tracées dans assets/CREDITS.md)
+public/assets/  Sprites, tuiles, sons — servis tels quels
+                (licences tracées dans public/assets/CREDITS.md : CC-BY-SA,
+                 l'attribution est une obligation, ne rien y supprimer)
 scripts/      Outils de build
 tests/        Tests de la logique pure — pas du rendu
 ```

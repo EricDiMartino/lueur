@@ -1,0 +1,6 @@
+[
+  { "id": "herbe",         "symbole": ".", "tuile": 118, "traversable": true },
+  { "id": "herbe_fleurie", "symbole": ",", "tuile": 181, "traversable": true },
+  { "id": "herbe_touffue", "symbole": ";", "tuile": 182, "traversable": true },
+  { "id": "herbe_rase",    "symbole": "'", "tuile": 183, "traversable": true }
+]
